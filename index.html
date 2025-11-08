@@ -1,0 +1,142 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ QR Code Generator by Phithakchai ✨</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for a modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- QR Code generation library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        /* Apply the Sarabun font to the whole page */
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-cyan-200 to-emerald-300 flex items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-6 transform hover:scale-105 transition-transform duration-300">
+        
+        <!-- Header Section -->
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-800">✨ สร้าง QR Code ✨</h1>
+            <p class="text-gray-500 mt-2">👇 เพียงวางลิงก์หรือข้อความ แล้วกดสร้าง 👇</p>
+        </div>
+
+        <!-- Input Section -->
+        <div>
+            <label for="urlInput" class="text-sm font-medium text-gray-700">ลิงก์ หรือ ข้อความ 📝</label>
+            <input type="text" id="urlInput" placeholder="https://example.com" class="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition">
+        </div>
+
+        <!-- Generate Button -->
+        <button id="generateBtn" class="w-full bg-cyan-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 transition-transform transform hover:scale-105">
+            🚀 สร้าง QR Code
+        </button>
+
+        <!-- QR Code Display Area -->
+        <div id="qrcode-container" class="mt-6 flex justify-center items-center bg-gray-50 border-2 border-dashed border-cyan-300 rounded-lg min-h-[280px] p-4">
+            <div id="qrcode" class="flex justify-center items-center">
+                <span class="text-gray-400">🖼️ QR Code จะแสดงที่นี่</span>
+            </div>
+        </div>
+
+        <!-- Download Button (Initially Hidden) -->
+        <button id="downloadBtn" class="hidden w-full bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-transform transform hover:scale-105 mt-4">
+            💾 ดาวน์โหลด QR Code
+        </button>
+
+        <!-- Footer / Attribution Section -->
+        <div class="text-center text-xs text-gray-400 pt-6 border-t mt-6">
+            <p>สร้างโดย AI 🤖 <strong class="font-semibold text-gray-600">Gemini</strong></p>
+            <p class="mt-1">ตามคำสั่งของ 👨‍💻 <strong class="font-semibold text-gray-600">นายพิทักษ์ชัย ผายบึงแก้ว</strong></p>
+            <p class="mt-1">โรงเรียนตระกาศประชาสามัคคี 🏫</p>
+        </div>
+    </div>
+
+    <script>
+        // Get references to the HTML elements
+        const urlInput = document.getElementById('urlInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let qrcodeInstance = null; // To hold the QRCode instance
+
+        // Function to generate QR code
+        const generateQRCode = () => {
+            const url = urlInput.value.trim();
+
+            // Hide the download button whenever a new QR is requested
+            downloadBtn.classList.add('hidden');
+
+            // If the input is empty, do nothing
+            if (!url) {
+                urlInput.focus();
+                return;
+            }
+
+            // Clear the previous QR Code
+            qrcodeContainer.innerHTML = '';
+
+            // Create a new QR Code
+            qrcodeInstance = new QRCode(qrcodeContainer, {
+                text: url,
+                width: 700,
+                height: 700,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Use a timeout to ensure the QR code image has rendered to the DOM
+            setTimeout(() => {
+                const qrImg = qrcodeContainer.querySelector('img');
+                if (qrImg) {
+                    // Show the download button once the QR code is visible
+                    downloadBtn.classList.remove('hidden'); 
+                }
+            }, 100);
+        };
+
+        // Function to download the QR code
+        const downloadQRCode = () => {
+            const qrImg = qrcodeContainer.querySelector('img');
+            
+            if (qrImg && qrImg.src) {
+                // The library creates an img with a base64 src, which is perfect for downloading.
+                const link = document.createElement('a');
+                link.href = qrImg.src;
+                link.download = 'qrcode.png'; // Set the filename for the download
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        };
+
+        // Add event listeners
+        generateBtn.addEventListener('click', generateQRCode);
+        downloadBtn.addEventListener('click', downloadQRCode);
+
+        // Optional: Allow generating by pressing Enter key in the input field
+        urlInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                generateQRCode();
+            }
+        });
+    </script>
+
+</body>
+</html>
+
